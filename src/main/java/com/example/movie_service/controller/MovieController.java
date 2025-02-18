@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,6 +29,8 @@ public class MovieController {
         return ResponseEntity.ok(movieService.getAllMovies());
     }
 
+
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping(consumes = "application/json", produces = "application/json")
     public ResponseEntity<?> createMovie(@RequestBody String movieJson, @RequestHeader HttpHeaders headers) {
         logger.info("headers: {}", headers);
@@ -67,6 +70,8 @@ public class MovieController {
         return ResponseEntity.ok(filteredMovies);
     }
 
+
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<Movie> updateMovie(@PathVariable Long id, @RequestBody Movie movieDetails) {
         try {
@@ -81,12 +86,16 @@ public class MovieController {
         }
     }
 
+
+    @PreAuthorize("hasAuthority('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteMovie(@PathVariable Long id) {
         movieService.deleteMovie(id);
         return ResponseEntity.ok("Pelicula eliminada con exito");
     }
 
+
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping("/{movieId}/actors/{actorId}")
     public ResponseEntity<Movie> addActorToMovie(@PathVariable Long movieId, @PathVariable Long actorId) {
         try {
