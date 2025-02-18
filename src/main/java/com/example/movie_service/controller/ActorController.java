@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+
 @RestController
 @RequestMapping("/actors")
-@CrossOrigin(origins = "http://localhost:3000", allowedHeaders = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS}, exposedHeaders = "Authorization")
 public class ActorController {
 
     private final IActorService actorService;
@@ -20,6 +20,7 @@ public class ActorController {
     public ActorController(IActorService actorService) {
         this.actorService = actorService;
     }
+
 
     @GetMapping
     public List<Actor> getActors() {
@@ -43,7 +44,6 @@ public class ActorController {
             return ResponseEntity.notFound().build();
         }
 
-        // Update existing actor fields
         actor.setName(updatedActor.getName());
         actor.setBirthdate(updatedActor.getBirthdate());
         actor.setNationality(updatedActor.getNationality());
@@ -53,8 +53,13 @@ public class ActorController {
     }
 
     @DeleteMapping("/{id}")
-    public String deleteActor(@PathVariable Long id) {
+    public ResponseEntity<String> deleteActor(@PathVariable Long id) {
         actorService.deleteActor(id);
-        return "Actor eliminado correctamente!";
+        return ResponseEntity.ok("Actor eliminado correctamente!");
+    }
+
+    @RequestMapping(value = "/{id}", method = RequestMethod.OPTIONS)
+    public ResponseEntity<?> handleOptions() {
+        return ResponseEntity.ok().build();
     }
 }

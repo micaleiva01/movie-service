@@ -13,7 +13,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/movies")
-@CrossOrigin(origins = "http://localhost:3000", allowedHeaders = "*")
 public class MovieController {
 
     private static final Logger logger = LoggerFactory.getLogger(MovieController.class);
