@@ -75,8 +75,8 @@ public class MovieController {
     @PutMapping("/{id}")
     public ResponseEntity<Movie> updateMovie(@PathVariable Long id, @RequestBody Movie movieDetails) {
         try {
-            System.out.println("Updating movie ID: " + id);
-            System.out.println("New Image URL: " + movieDetails.getImage());
+            System.out.println("Actualizando pelicula con el siguiente id: " + id);
+            System.out.println("Nuevo URL de la imagen: " + movieDetails.getImage());
 
             Movie updatedMovie = movieService.updateMovie(id, movieDetails);
 
@@ -96,14 +96,10 @@ public class MovieController {
 
 
     @PreAuthorize("hasAuthority('ADMIN')")
-    @PostMapping("/{movieId}/actors/{actorId}")
+    @PutMapping("/{movieId}/actor/{actorId}")
     public ResponseEntity<Movie> addActorToMovie(@PathVariable Long movieId, @PathVariable Long actorId) {
-        try {
-            Movie updatedMovie = movieService.addActorToMovie(movieId, actorId);
-            return ResponseEntity.ok(updatedMovie);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
+        Movie updatedMovie = movieService.addActorToMovie(movieId, actorId);
+        return updatedMovie != null ? ResponseEntity.ok(updatedMovie) : ResponseEntity.notFound().build();
     }
 }
 

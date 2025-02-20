@@ -7,6 +7,7 @@ import com.example.movie_service.repository.ActorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -46,10 +47,10 @@ public class MovieServiceImpl implements IMovieService{
         if (optionalMovie.isPresent()) {
             Movie existingMovie = optionalMovie.get();
 
-            System.out.println("Received image in update request: " + movieDetails.getImage());
+            System.out.println("Peticion de imagen recibida: " + movieDetails.getImage());
 
-            System.out.println("Movie ID: " + id);
-            System.out.println("New Image URL: " + movieDetails.getImage());
+            System.out.println("ID de la pelicula: " + id);
+            System.out.println("Nuevo URL de la imagen: " + movieDetails.getImage());
 
             existingMovie.setTitle(movieDetails.getTitle());
             existingMovie.setYear(movieDetails.getYear());
@@ -62,7 +63,7 @@ public class MovieServiceImpl implements IMovieService{
 
             return movieRepository.save(existingMovie);
         } else {
-            throw new RuntimeException("Movie not found with id: " + id);
+            throw new RuntimeException("pelicula no encontrada con el siguiente id: " + id);
         }
     }
 
@@ -78,15 +79,26 @@ public class MovieServiceImpl implements IMovieService{
 
     @Override
     public Movie addActorToMovie(Long movieId, Long actorId) {
-        Movie movie = movieRepository.findById(movieId)
-                .orElseThrow(() -> new RuntimeException("Pelicula con el siguiente ID no encontrada: " + movieId));
+        Optional<Movie> movieOptional = movieRepository.findById(movieId);
+        Optional<Actor> actorOptional = actorRepository.findById(actorId);
 
-        Actor actor = actorRepository.findById(actorId)
-                .orElseThrow(() -> new RuntimeException("Actor con el siguiente ID no encontrado: " + actorId));
+        if (movieOptional.isEmpty() || actorOptional.isEmpty()) {
+            throw new RuntimeException("Pelicula o Actor no encontrado.");
+        }
+
+        Movie movie = movieOptional.get();
+        Actor actor = actorOptional.get();
+
+        if (movie.getActors() == null) {
+            movie.setActors(new HashSet<>());
+        }
 
         movie.getActors().add(actor);
-        return movieRepository.save(movie);
+        movieRepository.save(movie);
+
+        return movie;
     }
+
 
     @Override
     public List<Movie> searchMovies(String query) {
